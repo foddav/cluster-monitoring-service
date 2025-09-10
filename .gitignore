@@ -1,0 +1,16 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+
+# Local env & credentials
+.env
+*.pem
+
+# IDE & editor settings
+.vscode/
+.idea/
+
+# kubectl local configs
+.kube/
