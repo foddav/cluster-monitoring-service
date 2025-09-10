@@ -36,63 +36,57 @@ This repo supports two modes:
 - Local Kubernetes (kind / minikube) — fast, free local testing (skip Terraform).
 
 
-# A) AWS EKS (Terraform) — full infra-as-code flow
-Edit terraform.tfvars to set region, cluster_name, node type, etc.
-cp terraform.tfvars.example terraform.tfvars
+### A) AWS EKS (Terraform) — full infra-as-code flow
+1. Edit terraform.tfvars to set region, cluster_name, node type, etc.
+2. cp terraform.tfvars.example terraform.tfvars
 
-terraform init
-terraform apply -auto-approve
+3. terraform init
+4. terraform apply -auto-approve
 
-terraform output kubeconfig_cmd
-run the printed `aws eks update-kubeconfig --name ... --region ...` command
-or:
+5. terraform output kubeconfig_cmd
+6. run the printed `aws eks update-kubeconfig --name ... --region ...` command  
+or:  
 ./service/scripts/setup-kubectl.sh <cluster-name> <region>
 
-**Set environment variables for deploy (do NOT commit these):**
-export GRAFANA_ADMIN_PASSWORD="YourGrafanaPass"
-export SMTP_SMARTHOST="smtp.example.com:587"
-export SMTP_FROM="alerts@example.com"
-export SMTP_USER="smtp-user"
-export SMTP_PASS="smtp-pass"
+7. **Set environment variables for deploy (do NOT commit these):**  
+export GRAFANA_ADMIN_PASSWORD="YourGrafanaPass"  
+export SMTP_SMARTHOST="smtp.example.com:587"  
+export SMTP_FROM="alerts@example.com"  
+export SMTP_USER="smtp-user"  
+export SMTP_PASS="smtp-pass"  
 export ALERT_TO="your-email@example.com"
 
-./service/scripts/deploy-monitoring.sh
+8. ./service/scripts/deploy-monitoring.sh  
 
-**Access Grafana UI**
-kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
-open http://localhost:3000  (user: admin, password: GRAFANA_ADMIN_PASSWORD)
+9. **Access Grafana UI**  
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80  
+open http://localhost:3000  (user: admin, password: GRAFANA_ADMIN_PASSWORD)  
 
-**Access Prometheus UI**
-kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
-open http://localhost:9090
+10. **Access Prometheus UI**  
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090  
+open http://localhost:9090  
 
-**Alert Manager UI**
-kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
-open http://localhost:9093
+11. **Access Alert Manager UI**  
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093  
+open http://localhost:9093  
 
-**Trigger a demo alert (scale stress pod):**
-kubectl -n demo scale deploy/stress-cpu --replicas=3
-wait a couple minutes; monitor Grafana / Prometheus and check mail for Alertmanager notification
+12. **Trigger a demo alert (scale stress pod):**  
+kubectl -n demo scale deploy/stress-cpu --replicas=3  
+wait a couple minutes; monitor Grafana / Prometheus and check mail for Alertmanager notification  
 
-cd service/infra
+13. cd service/infra  
 terraform destroy -auto-approve
 
-# B) Local Kubernetes (kind / minikube) — quick test
-kind create cluster --name monitoring-demo
+### B) Local Kubernetes (kind / minikube) — quick test
+1. kind create cluster --name monitoring-demo  
 or: minikube start
 
-**From repo root set environment variables (same as in A):**
-export GRAFANA_ADMIN_PASSWORD="localpass"
-export SMTP_SMARTHOST="smtp.mailtrap.io:587"
-export SMTP_FROM="alerts@local.test"
-export SMTP_USER="user"
-export SMTP_PASS="pass"
-export ALERT_TO="you@local.test"
+2. From repo root set environment variables (same as in A)
 
-./service/scripts/deploy-monitoring.sh
+3. ./service/scripts/deploy-monitoring.sh
 
-Access Grafana/Prometheus/Alertmanager as in A version and trigger the stress pod scale.
+4. Access Grafana/Prometheus/Alertmanager as in A version and trigger the stress pod scale.
 
-kind delete cluster --name monitoring-demo
+5. kind delete cluster --name monitoring-demo  
 or: minikube stop && minikube delete
 
