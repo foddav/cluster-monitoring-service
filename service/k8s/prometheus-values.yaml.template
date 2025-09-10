@@ -1,0 +1,26 @@
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: '${GRAFANA_ADMIN_PASSWORD}'
+  service:
+    type: ClusterIP
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: true
+  config: |
+    global:
+      resolve_timeout: 5m
+      smtp_smarthost: '${SMTP_SMARTHOST}'
+      smtp_from: '${SMTP_FROM}'
+      smtp_auth_username: '${SMTP_USER}'
+      smtp_auth_password: '${SMTP_PASS}'
+    route:
+      receiver: 'team-email'
+    receivers:
+      - name: 'team-email'
+        email_configs:
+          - to: '${ALERT_TO}'
