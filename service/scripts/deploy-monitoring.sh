@@ -14,7 +14,7 @@ cd "${ROOT_DIR}"
 : "${ALERT_TO:?Set ALERT_TO env var}"
 
 # render values file
-envsubst < ./k8s/prometheus-values.yaml.template > /tmp/prometheus-values.yaml
+envsubst < ./k8s/prometheus-values.yaml > /tmp/prometheus-values.yaml
 
 # add helm repo & install
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -31,4 +31,4 @@ kubectl apply -f ./k8s/stress-deployment.yaml -n demo
 
 echo "Deployed monitoring stack and demo workload."
 echo "To access Grafana: kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80"
-echo "Grafana admin user: admin, password from env GRAFANA_ADMIN_PASSWORD or check secret if not set."
+echo "Grafana admin user: admin, password from env GRAFANA_ADMIN_PASSWORD."

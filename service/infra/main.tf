@@ -2,7 +2,7 @@ data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "4.0.0"
+  version = "6.0.1"
 
   name = "${var.cluster_name}-vpc"
   cidr = "10.0.0.0/16"
@@ -16,27 +16,37 @@ module "vpc" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "21.1.5"
+  version = "21.2.0"  
 
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
+  name = var.cluster_name
+  kubernetes_version = var.cluster_version
+
+  addons = {
+    coredns                = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
+    kube-proxy             = {}
+    vpc-cni                = {
+      before_compute = true
+    }
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
   enable_irsa = true
-  
+
+  endpoint_public_access = true
+  enable_cluster_creator_admin_permissions = true
+
   eks_managed_node_groups = {
     demo_nodes = {
-      desired_capacity = var.node_group_desired_capacity
-      min_size         = 1
-      max_size         = 2
-      instance_types   = [var.node_instance_type]
+      desired_size   = var.node_group_desired_capacity
+      min_size       = 1
+      max_size       = 2
+      instance_types = [var.node_instance_type]
     }
   }
 
-  tags = {
-    Owner = "cv-project"
-    Env   = "dev"
-  }
 }
