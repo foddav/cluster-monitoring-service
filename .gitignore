@@ -14,3 +14,5 @@ crash.log
 
 # kubectl local configs
 .kube/
+
+.DS_Store

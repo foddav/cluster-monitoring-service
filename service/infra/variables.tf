@@ -5,7 +5,7 @@ variable "region" {
 
 variable "cluster_name" {
   type    = string
-  default = "cv-monitoring-cluster"
+  default = "demo-monitoring-cluster"
 }
 
 variable "cluster_version" {
