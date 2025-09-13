@@ -17,11 +17,11 @@ spec:
       containers:
       - name: stress
         image: polinux/stress-ng:latest
-        args: ["-c", "1", "--timeout", "600s"]
+        args: ["-c", "2", "--timeout", "600s"]
         resources:
           requests:
-            cpu: "100m"
+            cpu: "500m"
             memory: "64Mi"
           limits:
-            cpu: "500m"
+            cpu: "700m"
             memory: "128Mi"

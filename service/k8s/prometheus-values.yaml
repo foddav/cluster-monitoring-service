@@ -11,7 +11,8 @@ prometheus:
 
 alertmanager:
   enabled: true
-  config: |
+  replicaCount: 1
+  config:
     global:
       resolve_timeout: 5m
       smtp_smarthost: '${SMTP_SMARTHOST}'
@@ -20,7 +21,13 @@ alertmanager:
       smtp_auth_password: '${SMTP_PASS}'
     route:
       receiver: 'team-email'
+      routes:
+        - match:
+            alertname: Watchdog
+          receiver: 'null'
     receivers:
       - name: 'team-email'
         email_configs:
           - to: '${ALERT_TO}'
+            send_resolved: true
+      - name: 'null'

@@ -20,5 +20,5 @@ variable "node_instance_type" {
 
 variable "node_group_desired_capacity" {
   type    = number
-  default = 1
+  default = 2
 }

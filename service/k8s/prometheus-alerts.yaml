@@ -4,6 +4,7 @@ metadata:
   name: demo-node-cpu-alert
   labels:
     role: alert-rules
+    release: kube-prometheus-stack
 spec:
   groups:
   - name: demo.rules

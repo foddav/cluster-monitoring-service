@@ -37,56 +37,68 @@ This repo supports two modes:
 
 
 ### A) AWS EKS (Terraform) — full infra-as-code flow
+
 1. Edit terraform.tfvars to set region, cluster_name, node type, etc.
-2. cp terraform.tfvars.example terraform.tfvars
 
+2. cd service/infra
 3. terraform init
-4. terraform apply -auto-approve
+4. terraform apply
 
-5. terraform output kubeconfig_cmd
-6. run the printed `aws eks update-kubeconfig --name ... --region ...` command  
-or:  
-./service/scripts/setup-kubectl.sh <cluster-name> <region>
+5. cd ../.. 
+6. chmod +x ./service/scripts/setup-kubectl.sh
+7. ./service/scripts/setup-kubectl.sh <cluster-name> <region>
 
-7. **Set environment variables for deploy (do NOT commit these):**  
-export GRAFANA_ADMIN_PASSWORD="YourGrafanaPass"  
-export SMTP_SMARTHOST="smtp.example.com:587"  
-export SMTP_FROM="alerts@example.com"  
-export SMTP_USER="smtp-user"  
-export SMTP_PASS="smtp-pass"  
-export ALERT_TO="your-email@example.com"
+8. **Create a .env file and set environment variables (do NOT commit these):**  
+GRAFANA_ADMIN_PASSWORD=YourGrafanaPass  
+SMTP_SMARTHOST=smtp.example.com:587  
+SMTP_FROM=alerts@example.com  
+SMTP_USER=smtp-user  
+SMTP_PASS=smtp-pass  
+ALERT_TO=your-email@example.com
+9. export $(grep -v '^#' .env | xargs)
 
-8. ./service/scripts/deploy-monitoring.sh  
+10. chmod +x ./service/scripts/deploy-monitoring.sh
+11. ./service/scripts/deploy-monitoring.sh
 
-9. **Access Grafana UI**  
+12. **Access Grafana UI**  
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80  
 open http://localhost:3000  (user: admin, password: GRAFANA_ADMIN_PASSWORD)  
 
-10. **Access Prometheus UI**  
+13. **Access Prometheus UI**  
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090  
 open http://localhost:9090  
 
-11. **Access Alert Manager UI**  
+14. **Access Alert Manager UI**  
 kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093  
 open http://localhost:9093  
 
-12. **Trigger a demo alert (scale stress pod):**  
-kubectl -n demo scale deploy/stress-cpu --replicas=3  
+15. **Trigger a demo alert (scale stress pod to increase CPU Utilisation):**  
+kubectl -n demo scale deploy/stress-cpu --replicas=4  
+(or --replicas=5 if you want faster process to increase the CPU >70%)
 wait a couple minutes; monitor Grafana / Prometheus and check mail for Alertmanager notification  
 
-13. cd service/infra  
-terraform destroy -auto-approve
+16. cd service/infra  
+terraform destroy
 
-### B) Local Kubernetes (kind / minikube) — quick test
-1. kind create cluster --name monitoring-demo  
-or: minikube start
+### B) Local Kubernetes (kind / minikube) — quick test  
+(Note that local resources might not be sufficient for the proper functioning of the service.)
 
-2. From repo root set environment variables (same as in A)
+1. Create a .env file and set environment variables (same as in A version)
+2. export $(grep -v '^#' .env | xargs)
 
-3. ./service/scripts/deploy-monitoring.sh
+3. kind create cluster --name monitoring-demo  
+or: minikube start  
+(you can add more CPU and memory with --cpus= and --memory=)
 
-4. Access Grafana/Prometheus/Alertmanager as in A version and trigger the stress pod scale.
+4. chmod +x ./service/scripts/deploy-monitoring.sh
+5. ./service/scripts/deploy-monitoring.sh
 
-5. kind delete cluster --name monitoring-demo  
+6. You have to wait until the pods start up before you can access services
+You can check pods:
+kubectl get pods -n monitoring
+
+7. Access Grafana/Prometheus/Alertmanager as in A version and trigger the stress pod scale.
+
+8. kind delete cluster --name monitoring-demo  
 or: minikube stop && minikube delete
 
