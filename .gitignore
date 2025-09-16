@@ -2,17 +2,12 @@
 *.tfstate
 *.tfstate.*
 .terraform/
-crash.log
 
 # Local env & credentials
 .env
-*.pem
 
-# IDE & editor settings
+# Editor settings
 .vscode/
-.idea/
 
-# kubectl local configs
-.kube/
-
+# System files
 .DS_Store
