@@ -17,8 +17,8 @@ cd "${ROOT_DIR}"
 envsubst < ./k8s/prometheus-values.yaml > /tmp/prometheus-values.yaml
 
 # add helm repo & install
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
+helm repo update || true
 
 kubectl create namespace monitoring || true
 helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
