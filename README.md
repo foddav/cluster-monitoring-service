@@ -40,7 +40,8 @@ This repo supports two modes:
 
 1. Edit service/infra/terraform.tfvars to set region, cluster_name, node type, etc., or you can leave the default values.  
   
-2.  ```  
+2.  
+```  
 cd service/infra  
 terraform init  
 terraform apply  
